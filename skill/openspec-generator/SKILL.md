@@ -21,75 +21,75 @@ brownfield-first      — works with existing codebases
 
 ---
 
-## Processo de Geração
+## Generation Process
 
-### Passo 0 — Verificar Pré-condições e Determinar Modo (OBRIGATÓRIO)
+### Step 0 — Check Preconditions and Determine Mode (REQUIRED)
 
-**Antes de qualquer coisa**, verifique o estado do projeto para determinar o **modo de operação**:
+**First**, check the project state to determine the **operating mode**:
 
 ```bash
-# 1. Verificar se a pasta openspec/ existe
-[ ! -d "openspec" ] && echo "ERRO: openspec/ não encontrada" && exit 1
+# 1. Check if openspec/ folder exists
+[ ! -d "openspec" ] && echo "ERROR: openspec/ not found" && exit 1
 
-# 2. Verificar se openspec/specs/ existe
-[ ! -d "openspec/specs" ] && echo "ERRO: openspec/specs/ não encontrada" && exit 1
+# 2. Check if openspec/specs/ exists
+[ ! -d "openspec/specs" ] && echo "ERROR: openspec/specs/ not found" && exit 1
 
-# 3. Contar specs existentes e listar domínios cobertos
+# 3. Count existing specs and list covered domains
 SPECS_COUNT=$(find openspec/specs -name "spec.md" | wc -l)
-echo "Specs encontradas: $SPECS_COUNT"
+echo "Specs found: $SPECS_COUNT"
 find openspec/specs -name "spec.md" | sort
 ```
 
-**Resultado da verificação determina o modo:**
+**Verification result determines the mode:**
 
-| Situação | Modo | Ação |
-|----------|------|------|
-| `openspec/` não existe | ❌ Bloqueado | Informar: "Inicialize o OpenSpec primeiro criando `openspec/` e `openspec/specs/`." |
-| `openspec/specs/` não existe | ❌ Bloqueado | Informar: "Crie a pasta `openspec/specs/` antes de continuar." |
-| `openspec/specs/` **vazia** | 🟢 **Modo Inicial** | Prosseguir para Passo 1 — gerar specs do zero |
-| `openspec/specs/` **com specs** | 🔵 **Modo Auditoria** | Prosseguir para Passo 1-A — auditar e expandir |
+| Situation | Mode | Action |
+|-----------|------|--------|
+| `openspec/` doesn't exist | ❌ Blocked | Inform: "Initialize OpenSpec first by creating `openspec/` and `openspec/specs/`." |
+| `openspec/specs/` doesn't exist | ❌ Blocked | Inform: "Create the `openspec/specs/` folder before continuing." |
+| `openspec/specs/` **empty** | 🟢 **Initial Mode** | Proceed to Step 1 — generate specs from scratch |
+| `openspec/specs/` **has specs** | 🔵 **Audit Mode** | Proceed to Step 1-A — audit and expand |
 
 ---
 
-### Passo 1 — Explorar o Projeto (Modo Inicial)
+### Step 1 — Explore the Project (Initial Mode)
 
-> **Pule para o Passo 1-A se estiver no Modo Auditoria.**
+> **Skip to Step 1-A if in Audit Mode.**
 
-Explore o projeto para identificar todos os domínios:
+Explore the project to identify all domains:
 
 ```bash
-# Estrutura de arquivos relevantes
+# Relevant file structure
 find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) \
   | grep -v node_modules | grep -v dist | grep -v .next | head -80
 
-# Estrutura de pastas
+# Folder structure
 ls -la src/ 2>/dev/null || ls -la app/ 2>/dev/null || ls -la
 
-# Contexto do projeto
+# Project context
 cat package.json 2>/dev/null | head -40
 cat README.md 2>/dev/null | head -50
 ```
 
-**O que procurar:**
-- Pastas de features/domínios (`auth/`, `payments/`, `users/`, `orders/`)
-- Rotas de API (`routes.ts`, `controller.ts`, `api/`)
-- Modelos/entidades (`schema`, `model`, `entity`, `dto`)
-- Configurações (`.env.example`)
-- Testes existentes — revelam comportamento esperado implícito
+**What to look for:**
+- Feature/domain folders (`auth/`, `payments/`, `users/`, `orders/`)
+- API routes (`routes.ts`, `controller.ts`, `api/`)
+- Models/entities (`schema`, `model`, `entity`, `dto`)
+- Configuration (`.env.example`)
+- Existing tests — reveal implicit expected behavior
 
 ---
 
-### Passo 1-A — Auditar Specs Existentes (Modo Auditoria)
+### Step 1-A — Audit Existing Specs (Audit Mode)
 
-Quando `openspec/specs/` já tem conteúdo, o objetivo é **identificar lacunas** — domínios não cobertos e requirements faltando nas specs existentes.
+When `openspec/specs/` already has content, the goal is **to identify gaps** — uncovered domains and missing requirements in existing specs.
 
-#### 1-A.1 — Ler todas as specs existentes
+#### 1-A.1 — Read all existing specs
 
 ```bash
-# Listar domínios já cobertos
+# List already covered domains
 find openspec/specs -name "spec.md" | sort
 
-# Ler cada spec existente
+# Read each existing spec
 for spec in $(find openspec/specs -name "spec.md"); do
   echo "=== $spec ==="
   cat "$spec"
@@ -97,10 +97,10 @@ for spec in $(find openspec/specs -name "spec.md"); do
 done
 ```
 
-#### 1-A.2 — Mapear domínios do código
+#### 1-A.2 — Map domains from code
 
 ```bash
-# Explorar estrutura do projeto para encontrar domínios não documentados
+# Explore project structure to find undocumented domains
 find . -type f \( -name "*.ts" -o -name "*.tsx" \) \
   | grep -v node_modules | grep -v dist | grep -v ".spec.ts" \
   | grep -E "(controller|service|route|module)" | sort
@@ -108,201 +108,201 @@ find . -type f \( -name "*.ts" -o -name "*.tsx" \) \
 ls src/ 2>/dev/null || ls app/ 2>/dev/null
 ```
 
-#### 1-A.3 — Identificar lacunas
+#### 1-A.3 — Identify gaps
 
-Construa dois mapas:
+Build two maps:
 
-**Domínios no código mas SEM spec:**
-- Liste pastas/features no código que não têm pasta correspondente em `openspec/specs/`
-- Esses domínios precisam de specs novas
+**Domains in code but WITHOUT spec:**
+- List code folders/features that don't have a corresponding folder in `openspec/specs/`
+- These domains need new specs
 
-**Domínios COM spec mas com possíveis gaps:**
-- Compare controllers/routes com requirements existentes
-- Identifique endpoints ou comportamentos sem cenário documentado
-- Verifique se edge cases críticos (erros, permissões, limites) estão cobertos
+**Domains WITH spec but possible gaps:**
+- Compare controllers/routes with existing requirements
+- Identify endpoints or behaviors without documented scenarios
+- Check if critical edge cases (errors, permissions, limits) are covered
 
-#### 1-A.4 — Apresentar diagnóstico ao usuário
+#### 1-A.4 — Present diagnosis to user
 
-Antes de escrever qualquer coisa, apresente o resultado da análise:
+Before writing anything, present the analysis results:
 
 ```
-📋 Diagnóstico OpenSpec
+📋 OpenSpec Diagnosis
 
-✅ Domínios já cobertos (X specs):
+✅ Already covered domains (X specs):
   - auth/        → Y requirements, Z scenarios
   - payments/    → Y requirements, Z scenarios
 
-🆕 Domínios sem spec (encontrados no código):
-  - notifications/  → detectado em src/notifications/
-  - reports/        → detectado em src/reports/
+🆕 Domains without spec (found in code):
+  - notifications/  → detected in src/notifications/
+  - reports/        → detected in src/reports/
 
-⚠️  Gaps nas specs existentes:
-  - auth/: endpoint POST /auth/refresh não documentado
-  - payments/: cenário de estorno (refund) ausente
+⚠️  Gaps in existing specs:
+  - auth/: endpoint POST /auth/refresh not documented
+  - payments/: refund scenario missing
 
-Deseja que eu:
-[1] Crie specs para os domínios novos
-[2] Preencha os gaps nas specs existentes
-[3] Faça os dois
+Would you like me to:
+[1] Create specs for new domains
+[2] Fill gaps in existing specs
+[3] Do both
 ```
 
-Aguarde confirmação ou instrução do usuário antes de prosseguir.
+Wait for confirmation or instruction from user before proceeding.
 
 ---
 
-### Passo 2 — Identificar Domínios (Modo Inicial)
+### Step 2 — Identify Domains (Initial Mode)
 
-Mapeie as áreas funcionais do sistema:
+Map the functional areas of the system:
 
-| Tipo de organização | Exemplos de domínios |
+| Organization Type | Example Domains |
 |---------------------|----------------------|
-| Por feature         | `auth`, `payments`, `search`, `notifications` |
-| Por componente      | `api`, `frontend`, `workers`, `database` |
-| Por bounded context | `ordering`, `fulfillment`, `inventory` |
+| By feature         | `auth`, `payments`, `search`, `notifications` |
+| By component      | `api`, `frontend`, `workers`, `database` |
+| By bounded context | `ordering`, `fulfillment`, `inventory` |
 
-Para cada domínio, registre:
-- **Nome** — pasta em `openspec/specs/`
-- **Responsabilidade** — o que faz
-- **Fontes de evidência** — quais arquivos revelam o comportamento
+For each domain, record:
+- **Name** — folder in `openspec/specs/`
+- **Responsibility** — what it does
+- **Evidence sources** — which files reveal the behavior
 
 ---
 
-### Passo 3 — Gerar ou Atualizar os spec.md
+### Step 3 — Generate or Update spec.md
 
-#### Para domínios novos — criar `openspec/specs/{domínio}/spec.md`:
+#### For new domains — create `openspec/specs/{domain}/spec.md`:
 
 ```markdown
-# {Domínio} Specification
+# {Domain} Specification
 
 ## Purpose
-{Descrição de alto nível do que esse domínio faz no sistema.}
+High-level description of what this domain does in the system.
 
 ## Scope
-O que está **incluído** nessa spec:
-- {comportamento 1}
-- {comportamento 2}
+What's **included** in this spec:
+- {behavior 1}
+- {behavior 2}
 
-O que está **fora do escopo**:
-- {o que não está aqui e por quê}
+What's **out of scope**:
+- {what's not here and why}
 
 ## Requirements
 
-### Requirement: {Nome do Comportamento}
-The system SHALL/MUST/SHOULD {descrição do comportamento observável}.
+### Requirement: {Behavior Name}
+The system SHALL/MUST/SHOULD {observable behavior description}.
 
-#### Scenario: {Caso feliz}
-- GIVEN {pré-condição}
-- WHEN {ação ou evento}
-- THEN {resultado esperado}
-- AND {resultado adicional, se houver}
+#### Scenario: {Happy case}
+- GIVEN {precondition}
+- WHEN {action or event}
+- THEN {expected result}
+- AND {additional result, if any}
 
-#### Scenario: {Caso de erro ou edge case}
-- GIVEN {pré-condição}
-- WHEN {ação inválida ou situação excepcional}
-- THEN {como o sistema responde}
+#### Scenario: {Error or edge case}
+- GIVEN {precondition}
+- WHEN {invalid action or exceptional situation}
+- THEN {how the system responds}
 ```
 
-#### Para gaps em specs existentes — adicionar na spec correspondente:
+#### For gaps in existing specs — add to the corresponding spec:
 
-Inserir os requirements ou scenarios faltantes na seção `## Requirements` existente, mantendo o estilo e formato da spec original. **Não reescrever o que já existe.**
+Insert missing requirements or scenarios in the existing `## Requirements` section, keeping the style and format of the original spec. **Do not rewrite what already exists.**
 
-**Regras para o conteúdo:**
+**Content rules:**
 
-| ✅ Incluir | ❌ Evitar |
+| ✅ Include | ❌ Avoid |
 |------------|-----------|
-| Comportamento observável externamente | Nomes de classes/funções internas |
-| Entradas, saídas e condições de erro | Escolhas de biblioteca ou framework |
-| Restrições externas (segurança, privacidade) | Detalhes de implementação passo a passo |
-| Cenários testáveis (Given/When/Then) | Planos de execução detalhados |
+| Externally observable behavior | Internal class/function names |
+| Inputs, outputs, error conditions | Library or framework choices |
+| External constraints (security, privacy) | Step-by-step implementation details |
+| Testable scenarios (Given/When/Then) | Detailed execution plans |
 
-**Keywords RFC 2119:**
-- **MUST / SHALL** — requisito absoluto
-- **SHOULD** — recomendado, mas exceções existem
-- **MAY** — opcional
+**RFC 2119 Keywords:**
+- **MUST / SHALL** — absolute requirement
+- **SHOULD** — recommended, but exceptions exist
+- **MAY** — optional
 
 ---
 
-### Passo 4 — Atualizar o README do OpenSpec
+### Step 4 — Update OpenSpec README
 
-Se `openspec/README.md` não existe, crie. Se já existe, **atualize apenas a tabela de domínios** para incluir os novos:
+If `openspec/README.md` doesn't exist, create it. If it already exists, **update only the domain table** to include new ones:
 
 ```markdown
-# OpenSpec — {Nome do Projeto}
+# OpenSpec — {Project Name}
 
-Especificações comportamentais do sistema, organizadas por domínio.
+Behavioral specifications of the system, organized by domain.
 
-## Estrutura
+## Structure
 
 ### specs/
-Source of truth — como o sistema atualmente se comporta.
+Source of truth — how the system currently behaves.
 
-| Domínio | Descrição |
+| Domain | Description |
 |---------|-----------|
-| [auth](specs/auth/spec.md) | Autenticação e gerenciamento de sessão |
-| [payments](specs/payments/spec.md) | Processamento de pagamentos |
+| [auth](specs/auth/spec.md) | Authentication and session management |
+| [payments](specs/payments/spec.md) | Payment processing |
 | ... | ... |
 
 ### changes/
-Modificações propostas. Cada change vive em sua própria pasta até ser mergeada.
+Proposed modifications. Each change lives in its own folder until merged.
 
-## Convenções
+## Conventions
 
-- Requisitos usam keywords RFC 2119 (SHALL, MUST, SHOULD, MAY)
-- Cenários seguem formato Given/When/Then
-- Specs descrevem **comportamento**, não implementação
+- Requirements use RFC 2119 keywords (SHALL, MUST, SHOULD, MAY)
+- Scenarios follow Given/When/Then format
+- Specs describe **behavior**, not implementation
 ```
 
 ---
 
-### Passo 5 — Validar Qualidade
+### Step 5 — Validate Quality
 
-**Checklist por spec gerada ou modificada:**
-- [ ] Tem `## Purpose` claro e conciso?
-- [ ] Cada `### Requirement:` usa keyword RFC 2119?
-- [ ] Cada requirement tem pelo menos 1 scenario?
-- [ ] Os scenarios cobrem happy path E pelo menos 1 edge case?
-- [ ] Não menciona classes, métodos ou libs internas?
-- [ ] O comportamento descrito é **verificável/testável**?
-- [ ] No Modo Auditoria: o conteúdo existente foi preservado?
+**Checklist per generated or modified spec:**
+- [ ] Has clear and concise `## Purpose`?
+- [ ] Each `### Requirement:` uses RFC 2119 keyword?
+- [ ] Each requirement has at least 1 scenario?
+- [ ] Scenarios cover happy path AND at least 1 edge case?
+- [ ] Doesn't mention internal classes, methods, or libs?
+- [ ] Is the described behavior **verifiable/testable**?
+- [ ] In Audit Mode: was existing content preserved?
 
 ---
 
-## Estratégia por Tipo de Projeto
+## Strategy by Project Type
 
 ### NestJS / Express (Backend API)
-Analisar: `controller`, `routes`, `dto`, `guard`, `middleware`, testes `*.spec.ts`  
-Domínios típicos: `auth`, `users`, `{entidade-principal}`, `notifications`
+Analyze: `controller`, `routes`, `dto`, `guard`, `middleware`, tests `*.spec.ts`  
+Typical domains: `auth`, `users`, `{principal-entity}`, `notifications`
 
 ### React / Next.js (Frontend)
-Analisar: `pages/`, `app/`, formulários, hooks de data fetching, `store/`, `context/`  
-Domínios típicos: `ui`, `navigation`, `forms`, `{feature-principal}`
+Analyze: `pages/`, `app/`, forms, data fetching hooks, `store/`, `context/`  
+Typical domains: `ui`, `navigation`, `forms`, `{principal-feature}`
 
-### Full-stack (ex: Quantix — React + NestJS)
-Dividir por feature end-to-end:
-- `openspec/specs/auth/` — autenticação
-- `openspec/specs/transactions/` — transações
-- `openspec/specs/accounts/` — contas e saldos
-- `openspec/specs/reports/` — relatórios e exportações
-
----
-
-## Output Esperado
-
-Ao concluir, reporte ao usuário:
-
-**Modo Inicial:**
-- Domínios identificados e specs criadas
-- Requirements por domínio
-- Áreas com evidência fraca (precisam de revisão humana)
-
-**Modo Auditoria:**
-- Domínios novos criados
-- Gaps preenchidos nas specs existentes
-- Itens que requerem decisão humana (comportamento ambíguo no código)
-- Domínios no código ainda sem cobertura suficiente
+### Full-stack (e.g., Quantix — React + NestJS)
+Divide by end-to-end feature:
+- `openspec/specs/auth/` — authentication
+- `openspec/specs/transactions/` — transactions
+- `openspec/specs/accounts/` — accounts and balances
+- `openspec/specs/reports/` — reports and exports
 
 ---
 
-## Referências
+## Expected Output
 
-- [Conceitos OpenSpec](references/openspec-concepts.md) — Filosofia e formato completo
+When complete, report to user:
+
+**Initial Mode:**
+- Identified domains and created specs
+- Requirements per domain
+- Areas with weak evidence (need human review)
+
+**Audit Mode:**
+- New domains created
+- Gaps filled in existing specs
+- Items requiring human decision (ambiguous behavior in code)
+- Domains in code still without sufficient coverage
+
+---
+
+## References
+
+- [OpenSpec Concepts](references/openspec-concepts.md) — Full philosophy and format
