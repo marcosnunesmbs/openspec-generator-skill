@@ -53,7 +53,7 @@ This skill activates when you mention:
   "skills": [
     {
       "name": "openspec-generator",
-      "path": "PATH_TO_SKILL/e:\\openspec-generator\\skill\\openspec-generator"
+      "path": "PATH_TO_SKILL/openspec-generator"
     }
   ]
 }
