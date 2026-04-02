@@ -1,23 +1,23 @@
 ---
 name: openspec-generator
-description: Analyze an existing project and generate or update OpenSpec spec artifacts. Use this skill whenever the user wants to create or update specs for a project using OpenSpec, initialize an openspec/ folder, document system behavior, generate spec.md files from existing code, map features to requirements and scenarios, audit existing specs for gaps, or identify new domains not yet covered. Trigger this skill when the user mentions "openspec", "criar specs", "gerar especificações", "atualizar specs", "auditar specs", "documentar comportamento do sistema", "inicializar openspec", "há specs faltando", or asks to analyze a codebase and produce structured requirements. Also trigger for brownfield projects where the user wants to capture existing behavior formally.
+description: Analyze an existing project and generate or update OpenSpec spec artifacts. Use this skill whenever the user wants to create or update specs for a project using OpenSpec, initialize an openspec/ folder, document system behavior, generate spec.md files from existing code, map features to requirements and scenarios, audit existing specs for gaps, or identify new domains not yet covered. Trigger this skill when the user mentions "openspec", "create specs", "generate specifications", "update specs", "audit specs", "document system behavior", "initialize openspec", "specs missing", or asks to analyze a codebase and produce structured requirements. Also trigger for brownfield projects where the user wants to capture existing behavior formally.
 ---
 
 # OpenSpec Generator
 
-Skill para analisar um projeto existente e gerar ou atualizar os artefatos de especificação seguindo a estrutura e filosofia do OpenSpec.
+Skill for analyzing an existing project and generating or updating specification artifacts following the OpenSpec structure and philosophy.
 
-## Filosofia OpenSpec (resumo)
+## OpenSpec Philosophy (Summary)
 
 ```
-fluid not rigid       — sem phase gates, trabalhe no que faz sentido
-iterative not waterfall — aprenda enquanto constrói
-easy not complex      — setup leve, mínima cerimônia
-brownfield-first      — funciona com codebases existentes
+fluid not rigid       — no phase gates, work on what makes sense
+iterative not waterfall — learn while building
+easy not complex      — light setup, minimal ceremony
+brownfield-first      — works with existing codebases
 ```
 
-**Specs** descrevem como o sistema **atualmente se comporta** (source of truth).  
-**Changes** são modificações propostas, vivem em pastas separadas até o merge.
+**Specs** describe how the system **currently behaves** (source of truth).  
+**Changes** are proposed modifications, living in separate folders until merged.
 
 ---
 

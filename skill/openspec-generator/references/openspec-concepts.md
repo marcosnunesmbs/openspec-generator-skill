@@ -1,98 +1,98 @@
-# OpenSpec — Conceitos e Referência
+# OpenSpec — Concepts and Reference
 
-## Filosofia
+## Philosophy
 
-OpenSpec é construído em torno de quatro princípios:
+OpenSpec is built around four principles:
 
 ```
-fluid not rigid       — sem phase gates, trabalhe no que faz sentido
-iterative not waterfall — aprenda enquanto constrói, refine enquanto avança
-easy not complex      — setup leve, mínima cerimônia
-brownfield-first      — funciona com codebases existentes, não só greenfield
+fluid not rigid       — no phase gates, work on what makes sense
+iterative not waterfall — learn while building, refine as you go
+easy not complex      — light setup, minimal ceremony
+brownfield-first      — works with existing codebases, not just greenfield
 ```
 
-## Estrutura de Alto Nível
+## High-Level Structure
 
 ```
 openspec/
-├── specs/           # Source of truth — como o sistema funciona agora
+├── specs/           # Source of truth — how the system works now
 │   ├── auth/
 │   │   └── spec.md
 │   └── payments/
 │       └── spec.md
-└── changes/         # Modificações propostas (uma pasta por change)
+└── changes/         # Proposed modifications (one folder per change)
     └── add-oauth/
         ├── spec.delta.md
         ├── design.md
         └── tasks.md
 ```
 
-## Formato de spec.md
+## spec.md Format
 
 ```markdown
-# {Domínio} Specification
+# {Domain} Specification
 
 ## Purpose
-{Descrição de alto nível do domínio.}
+High-level description of the domain.
 
 ## Requirements
 
-### Requirement: {Nome}
-The system SHALL/MUST/SHOULD {comportamento observável}.
+### Requirement: {Name}
+The system SHALL/MUST/SHOULD {observable behavior}.
 
-#### Scenario: {Caso}
-- GIVEN {pré-condição}
-- WHEN {ação}
-- THEN {resultado}
-- AND {resultado adicional}
+#### Scenario: {Case}
+- GIVEN {precondition}
+- WHEN {action}
+- THEN {result}
+- AND {additional result}
 ```
 
 ## RFC 2119 Keywords
 
-| Keyword | Significado |
+| Keyword | Meaning |
 |---------|-------------|
-| MUST / SHALL | Requisito absoluto — sem exceções |
-| SHOULD | Recomendado — exceções justificadas existem |
-| MAY | Opcional |
-| MUST NOT / SHALL NOT | Absolutamente proibido |
+| MUST / SHALL | Absolute requirement — no exceptions |
+| SHOULD | Recommended — justified exceptions exist |
+| MAY | Optional |
+| MUST NOT / SHALL NOT | Absolutely prohibited |
 
-## O que é uma Spec (e o que não é)
+## What a Spec Is (and Isn't)
 
-**É:** contrato de comportamento  
-**Não é:** plano de implementação
+**Is:** behavior contract  
+**Is NOT:** implementation plan
 
-✅ Comportamento observável externamente  
-✅ Entradas, saídas, condições de erro  
-✅ Restrições (segurança, privacidade, performance)  
-✅ Cenários testáveis (Given/When/Then)
+✅ Externally observable behavior  
+✅ Inputs, outputs, error conditions  
+✅ Constraints (security, privacy, performance)  
+✅ Testable scenarios (Given/When/Then)
 
-❌ Nomes de classes/funções internas  
-❌ Escolhas de biblioteca/framework  
-❌ Detalhes de implementação  
-❌ Planos de execução passo a passo
+❌ Internal class/function names  
+❌ Library/framework choices  
+❌ Implementation details  
+❌ Step-by-step execution plans
 
-## Níveis de Rigor
+## Rigor Levels
 
-### Lite (padrão — use na maioria dos casos)
-- Requisitos curtos focados em comportamento
-- Escopo e não-escopo claros
-- Alguns cenários de aceitação concretos
+### Lite (default — use in most cases)
+- Short requirements focused on behavior
+- Clear scope and non-scope
+- Some concrete acceptance scenarios
 
-### Full (apenas para mudanças de alto risco)
-- Mudanças cross-team ou cross-repo
-- Mudanças de API/contrato
-- Migrações de dados
-- Requisitos de segurança/privacidade
-- Onde ambiguidade causa retrabalho caro
+### Full (only for high-risk changes)
+- Cross-team or cross-repo changes
+- API/contract changes
+- Data migrations
+- Security/privacy requirements
+- Where ambiguity causes expensive rework
 
 ## Changes vs Specs
 
-**Specs** (`openspec/specs/`) = source of truth atual  
-**Changes** (`openspec/changes/`) = modificações propostas
+**Specs** (`openspec/specs/`) = current source of truth  
+**Changes** (`openspec/changes/`) = proposed modifications
 
-Uma change pode conter:
-- `spec.delta.md` — o que muda na spec
-- `design.md` — decisões de implementação
-- `tasks.md` — trabalho concreto a fazer
+A change can contain:
+- `spec.delta.md` — what changes in the spec
+- `design.md` — implementation decisions
+- `tasks.md` — concrete work to do
 
-Quando a change é arquivada (mergeada), seus deltas se incorporam às specs.
+When a change is archived (merged), its deltas are incorporated into the specs.
